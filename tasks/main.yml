@@ -1,0 +1,33 @@
+---
+- name: install bastion packages
+  apt: name={{item}} state=installed
+  sudo: true
+  when: ansible_os_family == 'Debian'
+  with_items:
+    - snort
+    - selinux
+    - bastille
+    - squid3
+
+- name: copy bastille config
+  copy: src=bastille_config dest=/etc/Bastille/config
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: copy sysctl config
+  copy: src=sysctl.conf.deb dest=/etc/sysctl.conf
+  when: ansible_os_family == 'Debian'
+  sudo: true
+
+- name: copy squid.conf
+  copy: src=squid.conf dest=/etc/squid3/squid.conf
+  sudo: true
+  when: ansible_os_family == 'Debian'
+
+- name: reload sysctl conf
+  command: sysctl -p
+  sudo: true
+
+- name: enable ssh
+  command: chmod +x /usr/bin/ssh
+  sudo: true
